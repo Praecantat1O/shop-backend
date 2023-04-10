@@ -1,8 +1,6 @@
-'use strict';
+import { productsList } from '../assets/products';
 
-import productsList from '../assets/products.js';
-
-export async function getProductsList(event) {
+export async function getProductsList(event: any) {
   return {
     statusCode: 200,
     body: JSON.stringify(

@@ -1,4 +1,4 @@
-const productsList = [
+export const productsList = [
   {
     "count": 4,
     "description": "Short Product Description1",
@@ -56,5 +56,3 @@ const productsList = [
     "title": "ProductName"
   }
 ]
-
-export default productsList;

@@ -1,9 +1,8 @@
-'use strict';
+import { getItemById } from '../helpers/helpers';
+import { productsList } from '../assets/products';
 
-import productsList from '../assets/products.js';
-import {getItemById} from '../helpers/helpers.js';
 
-export async function getProductsById(event) {
+export async function getProductsById(event: any): Promise<any> {
   const { id } = event;
   const product = getItemById(productsList, id);
 
