@@ -1,13 +1,14 @@
 import { BatchWriteItemCommand, BatchWriteItemCommandInput, DynamoDBClient, PutRequest, WriteRequest } from "@aws-sdk/client-dynamodb"
 import { productsList } from '../assets/products';
+import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 
-const tableName = 'Products_Table';
+const productsTableName = 'Products_Table';
+const stockTableName = 'Stocks_Table';
 
-const convertedItems: WriteRequest[] = productsList.map(item => {
+const convertedProductItems: WriteRequest[] = productsList.map(item => {
   const putItem: PutRequest = {
     Item: {
       "id": {"S": item.id},
-      "count": {"N": String(item.count)},
       "price": {"N": String(item.price)},
       "title": {"S": item.title},
       "description": {"S": item.description}
@@ -19,10 +20,32 @@ const convertedItems: WriteRequest[] = productsList.map(item => {
   }
 })
 
-const params: BatchWriteItemCommandInput = {
+const productParams: BatchWriteItemCommandInput = {
   RequestItems: {
-    [tableName]: [
-      ...convertedItems
+    [productsTableName]: [
+      ...convertedProductItems
+    ]
+  }
+};
+
+const convertedStockItems: WriteRequest[] = productsList.map(item => {
+  const putItem: PutRequest = {
+    Item: {
+      "product_id": {"S": item.id},
+      "count": {"N": String(item.count)},
+    }
+  }
+
+  return {
+    PutRequest: putItem
+  }
+});
+
+
+const stockParams: BatchWriteItemCommandInput = {
+  RequestItems: {
+    [stockTableName]: [
+      ...convertedStockItems
     ]
   }
 };
@@ -30,12 +53,16 @@ const params: BatchWriteItemCommandInput = {
 
 (async () => {
   const client = new DynamoDBClient({ region: "us-east-1" });
-  const command = new BatchWriteItemCommand(params);
+  const ddbDocClient = DynamoDBDocumentClient.from(client);
+  const fillProducts = new BatchWriteItemCommand(productParams);
+  const fillStock = new BatchWriteItemCommand(stockParams);
 
   try {
-    const response = await client.send(command);
+    const productsResponse = await ddbDocClient.send(fillProducts);
+    const stockResponse = await ddbDocClient.send(fillStock);
 
-    console.log('response: ', response);
+    console.log('productsResponse: ', productsResponse);
+    console.log('stockResponse: ', stockResponse);
   } catch (err) {
     console.error(err);
   }
