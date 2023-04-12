@@ -1,13 +1,9 @@
-const headers = {
-  "Access-Control-Allow-Methods": "*",
-  "Access-Control-Allow-Headers": "*",
-  "Access-Control-Allow-Origin": "*",
-};
-
 export function successfulResponse(body) {
   return {
     statusCode: 200,
-    headers,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+    },
     body: JSON.stringify(body)
   }
 }
@@ -17,7 +13,9 @@ export function errorResponse(error) {
 
   return {
     statusCode: 404,
-    headers,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+    },
     body: JSON.stringify(error? error: 'Error: Something is wrong')
   }
 }
