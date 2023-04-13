@@ -10,7 +10,7 @@ package:
 
 provider:
   name: aws
-  runtime: nodejs16.x
+  runtime: nodejs18.x
   stage: development
   region: us-east-1
   iam:
@@ -18,7 +18,7 @@ provider:
       statements:
         - Effect: "Allow"
           Action:
-            - dynamodb:DescribeTable
+            - "dynamodb:DescribeTable"
             - "dynamodb:GetItem"
             - "dynamodb:PutItem"
             - "dynamodb:UpdateItem"
@@ -27,9 +27,9 @@ provider:
             - "dynamodb:Scan"
             - "dynamodb:BatchGetItem"
             - "dynamodb:BatchWriteItem"
+            - "ssm:GetParameter"
           Resource:
-            - "arn:aws:dynamodb:${ssm:/system/api/REGION}:448342942052:table/${ssm:/system/api/DATA_DDB_PRODUCTS_TABLE_NAME}"
-            - "arn:aws:dynamodb:${ssm:/system/api/REGION}:448342942052:table/${ssm:/system/api/DATA_DDB_STOCKS_TABLE_NAME}"
+            - "*"
 
 resources:
   Resources:
@@ -62,14 +62,14 @@ resources:
 
 functions:
   getProductsList:
-    handler: src/functions/getProductsList.handler
+    handler: src/functions/getProductsList.getProductsList
     events:
       - http:
           path: /products
           method: get
           cors: true
   getProductsById:
-    handler: src/functions/getProductsById.handler
+    handler: src/functions/getProductsById.getProductsById
     events:
       - http:
           path: /products/{id}

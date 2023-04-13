@@ -1,10 +1,9 @@
 import { ScanCommand } from '@aws-sdk/lib-dynamodb';
-import { middyfy } from '../helpers/middyfy';
 import { ddbDocumentClient, getSSMParameter } from '../dynamoDb/dynamo';
 import { errorResponse, successfulResponse } from '../helpers/responses';
 import { IProduct } from '../interfaces/product.interface';
 
-const getProductsList = async () => {
+export const getProductsList = async () => {
   const productsTableName = await getSSMParameter('/system/api/DATA_DDB_PRODUCTS_TABLE_NAME')
   const stocksTableName = await getSSMParameter('/system/api/DATA_DDB_STOCKS_TABLE_NAME')
 
@@ -27,5 +26,3 @@ const getProductsList = async () => {
   }
 
 }
-
-export const handler = middyfy(getProductsList)

@@ -1,11 +1,9 @@
 import { GetCommand } from '@aws-sdk/lib-dynamodb';
-import { middyfy } from '../helpers/middyfy';
 import { ddbDocumentClient, getSSMParameter } from '../dynamoDb/dynamo';
 import { errorResponse, successfulResponse } from '../helpers/responses';
-import { IProduct } from '../interfaces/product.interface';
 import { APIGatewayProxyEvent } from 'aws-lambda';
 
-const getProductsById = async (event: APIGatewayProxyEvent) => {
+export const getProductsById = async (event: APIGatewayProxyEvent) => {
   const { id } = event.pathParameters;
   const productsTableName = await getSSMParameter('/system/api/DATA_DDB_PRODUCTS_TABLE_NAME')
   const stocksTableName = await getSSMParameter('/system/api/DATA_DDB_STOCKS_TABLE_NAME')
@@ -29,5 +27,3 @@ const getProductsById = async (event: APIGatewayProxyEvent) => {
   }
 
 }
-
-export const handler = middyfy(getProductsById)
