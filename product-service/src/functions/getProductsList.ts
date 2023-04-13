@@ -13,6 +13,7 @@ export const getProductsList = async () => {
   try {
     const productsOutput = await ddbDocumentClient.send(productsScan);
     const stocksOutput = await ddbDocumentClient.send(stocksScan);
+    console.log('STOCKS: ', stocksOutput.Items);
 
     const mergedProducts = productsOutput.Items.map(product => {
       const count = stocksOutput.Items.find(stockItem => stockItem.product_id === product.id).count;

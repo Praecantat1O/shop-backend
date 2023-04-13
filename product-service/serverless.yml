@@ -53,6 +53,8 @@ resources:
         AttributeDefinitions:
           - AttributeName: "product_id"
             AttributeType: "S"
+          - AttributeName: "count"
+            AttributeType: "N"
         KeySchema:
           - AttributeName: "product_id"
             KeyType: "HASH"
