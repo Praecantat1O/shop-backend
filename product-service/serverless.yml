@@ -44,8 +44,8 @@ resources:
           - AttributeName: "id"
             KeyType: "HASH"
         ProvisionedThroughput:
-          ReadCapacityUnits: 5
-          WriteCapacityUnits: 5
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
     stocks:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -57,8 +57,8 @@ resources:
           - AttributeName: "product_id"
             KeyType: "HASH"
         ProvisionedThroughput:
-          ReadCapacityUnits: 5
-          WriteCapacityUnits: 5
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
 
 functions:
   getProductsList:
