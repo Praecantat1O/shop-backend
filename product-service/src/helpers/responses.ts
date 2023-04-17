@@ -8,11 +8,11 @@ export function successfulResponse(body) {
   }
 }
 
-export function errorResponse(error) {
+export function errorResponse(error, code = 404) {
   console.error('Error: ', error);
 
   return {
-    statusCode: 404,
+    statusCode: code,
     headers: {
       "Access-Control-Allow-Origin": "*",
     },

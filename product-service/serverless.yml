@@ -33,7 +33,7 @@ provider:
 
 resources:
   Resources:
-    products:
+    ProductsTable:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: ${ssm:/system/api/DATA_DDB_PRODUCTS_TABLE_NAME}
@@ -46,15 +46,13 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-    stocks:
+    StocksTable:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: ${ssm:/system/api/DATA_DDB_STOCKS_TABLE_NAME}
         AttributeDefinitions:
           - AttributeName: "product_id"
             AttributeType: "S"
-          - AttributeName: "count"
-            AttributeType: "N"
         KeySchema:
           - AttributeName: "product_id"
             KeyType: "HASH"
@@ -77,3 +75,11 @@ functions:
           path: /products/{id}
           method: get
           cors: true
+  createProduct:
+    handler: src/functions/createProduct.createProduct
+    events:
+      - http:
+          path: /products
+          method: post
+          cors: true
+
