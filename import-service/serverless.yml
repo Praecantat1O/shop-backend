@@ -1,0 +1,34 @@
+service: import-service
+
+frameworkVersion: '3'
+
+plugins:
+  - serverless-webpack
+
+package:
+  individually: true
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: development
+  region: us-east-1
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "ssm:GetParameter"
+          Resource:
+            - "*"
+
+functions:
+  importProductsFile:
+    handler: src/functions/importProductsFile.importProductsFile
+    events:
+      - http:
+          path: /import
+          method: get
+          cors: true
+
+
