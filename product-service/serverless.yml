@@ -10,9 +10,55 @@ package:
 
 provider:
   name: aws
-  runtime: nodejs16.x
+  runtime: nodejs18.x
   stage: development
   region: us-east-1
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "dynamodb:DescribeTable"
+            - "dynamodb:GetItem"
+            - "dynamodb:PutItem"
+            - "dynamodb:UpdateItem"
+            - "dynamodb:DeleteItem"
+            - "dynamodb:Query"
+            - "dynamodb:Scan"
+            - "dynamodb:BatchGetItem"
+            - "dynamodb:BatchWriteItem"
+            - "ssm:GetParameter"
+          Resource:
+            - "*"
+
+resources:
+  Resources:
+    ProductsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${ssm:/system/api/DATA_DDB_PRODUCTS_TABLE_NAME}
+        AttributeDefinitions:
+          - AttributeName: "id"
+            AttributeType: "S"
+        KeySchema:
+          - AttributeName: "id"
+            KeyType: "HASH"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    StocksTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${ssm:/system/api/DATA_DDB_STOCKS_TABLE_NAME}
+        AttributeDefinitions:
+          - AttributeName: "product_id"
+            AttributeType: "S"
+        KeySchema:
+          - AttributeName: "product_id"
+            KeyType: "HASH"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
 
 functions:
   getProductsList:
@@ -29,3 +75,11 @@ functions:
           path: /products/{id}
           method: get
           cors: true
+  createProduct:
+    handler: src/functions/createProduct.createProduct
+    events:
+      - http:
+          path: /products
+          method: post
+          cors: true
+
