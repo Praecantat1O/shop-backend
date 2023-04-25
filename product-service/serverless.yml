@@ -82,4 +82,8 @@ functions:
           path: /products
           method: post
           cors: true
+  catalogBatchProcess:
+    handler: src/functions/catalogBatchProcess.catalogBatchProcess
+    events:
+      - sqs: arn:aws:sqs:region:XXXXXX:MyFirstQueue
 
