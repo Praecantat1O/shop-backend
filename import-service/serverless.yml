@@ -21,6 +21,16 @@ provider:
             - "ssm:GetParameter"
           Resource:
             - "*"
+        - Effect: "Allow"
+          Action:
+            - "s3:ListBucket"
+          Resource:
+            - "arn:aws:s3:::${ssm:/system/api/IMPORT_SERVICE_BUCKET_NAME}"
+        - Effect: "Allow"
+          Action:
+            - "s3:*"
+          Resource:
+            - "arn:aws:s3:::${ssm:/system/api/IMPORT_SERVICE_BUCKET_NAME}/*"
 
 functions:
   importProductsFile:
@@ -30,5 +40,18 @@ functions:
           path: /import
           method: get
           cors: true
+          request:
+            parameters:
+              querystrings:
+                name: true
+  importFileParser:
+    handler: src/functions/importFileParser.importFileParser
+    events:
+      - s3:
+          bucket: ${ssm:/system/api/IMPORT_SERVICE_BUCKET_NAME}
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: uploaded/
+          existing: true
 
 

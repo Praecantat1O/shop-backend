@@ -8,7 +8,9 @@ module.exports = {
   resolve: {
     extensions: ['.ts', 'tsx']
   },
-  externals: [nodeExternals()], // in order to ignore all modules in node_modules folder
+  externals: [nodeExternals({
+    allowlist: ['csv-parser']
+  })], // in order to ignore all modules in node_modules folder
   externalsPresets: {
       node: true // in order to ignore built-in modules like path, fs, etc.
   },

@@ -10,8 +10,8 @@
   "license": "ISC",
   "devDependencies": {
     "@types/aws-lambda": "^8.10.114",
+    "@types/aws-sdk": "^2.7.0",
     "@types/node": "^18.15.11",
-    "@types/uuid": "^9.0.1",
     "@typescript-eslint/eslint-plugin": "^5.57.1",
     "@typescript-eslint/parser": "^5.57.1",
     "eslint": "^8.38.0",
@@ -21,9 +21,13 @@
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4",
     "webpack": "^5.78.0",
+    "webpack-cli": "^5.0.2",
     "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.315.0",
+    "@aws-sdk/client-ssm": "^3.315.0",
+    "@aws-sdk/s3-request-presigner": "^3.315.0",
     "csv-parser": "^3.0.0"
   }
 }
