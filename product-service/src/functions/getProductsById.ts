@@ -15,7 +15,6 @@ export const getProductsById = async (event: APIGatewayProxyEvent) => {
     Key: { id }
   });
 
-
   const getStock = new GetCommand({
     TableName: stocksTableName,
     Key: {
