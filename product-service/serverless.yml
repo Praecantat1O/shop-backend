@@ -30,6 +30,14 @@ provider:
             - "ssm:GetParameter"
           Resource:
             - "*"
+        - Effect: "Allow"
+          Action:
+            - sqs:*
+          Resource:
+            Fn::GetAtt: [ProductsSQSQueue, Arn]
+        - Effect: Allow
+          Action: sns:*
+          Resource: "*"
 
 resources:
   Resources:
@@ -59,6 +67,11 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+    ProductsSQSQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ProductsSQSQueue
+
 
 functions:
   getProductsList:
@@ -85,5 +98,7 @@ functions:
   catalogBatchProcess:
     handler: src/functions/catalogBatchProcess.catalogBatchProcess
     events:
-      - sqs: arn:aws:sqs:region:XXXXXX:MyFirstQueue
-
+      - sqs:
+          batchSize: 5
+          arn:
+            Fn::GetAtt: [ProductsSQSQueue, Arn]
