@@ -71,7 +71,17 @@ resources:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: ProductsSQSQueue
-
+    CreateProductTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        DisplayName: 'Product topic'
+        TopicName: createProductTopic
+    CreateProductTopicSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        TopicArn: {"Ref": "CreateProductTopic"}
+        Endpoint: "Stanislau_Ukolau@epam.com"
+        Protocol: "email"
 
 functions:
   getProductsList:

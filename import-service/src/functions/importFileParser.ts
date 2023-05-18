@@ -1,47 +1,56 @@
 import { Context, S3Event } from 'aws-lambda';
-import { GetObjectCommand } from '@aws-sdk/client-s3';
+import { CopyObjectCommand, DeleteObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 
-import { errorResponse, successfulResponse } from '../helpers/responses.helper';
+import { errorResponse } from '../helpers/responses.helper';
 import { s3client } from '../helpers/s3.helper';
 import { getSSMParameter } from '../helpers/ssm.helper';
 import { Readable } from 'stream';
+import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs'
 
 import csv from 'csv-parser';
 
 export const importFileParser = async (event: S3Event, context: Context) => {
-  console.log('Event: ', event)
+  const sqsClient = new SQSClient({region: 'us-east-1'});
+
   const bucketName = await getSSMParameter('/system/api/IMPORT_SERVICE_BUCKET_NAME');
-  const fileName = event.Records[0].s3.object.key;
-  const s3Params = {
-    Bucket: bucketName,
-    Key: fileName,
-  }
+  const queueUrl = await getSSMParameter('/system/api/PRODUCTS_QUEUE_URL');
 
-  const results = [];
-
-  const getObjectCommand = new GetObjectCommand(s3Params);
+  const key = event.Records[0].s3.object.key;
 
   try {
-    const s3item = await s3client.send(getObjectCommand);
+    const stream = (await s3client.send(new GetObjectCommand({
+      Bucket: bucketName,
+      Key: key,
+    }))).Body as Readable;
 
-    if (s3item.Body) {
-      const stream = s3item.Body as Readable;
+    stream
+      .pipe(csv({separator: ';'}))
+      .on('data', (record) => {
+        console.log('Record: ', record);
+        sqsClient.send(new SendMessageCommand({
+            MessageBody: JSON.stringify(record),
+            QueueUrl: queueUrl,
+          })
+        )
+      })
 
-      stream
-        .pipe(csv({
-          separator: ';'
+      try {
+        await s3client.send(new CopyObjectCommand({
+          CopySource: `${bucketName}/${key}`,
+          Bucket: bucketName,
+          Key: key.replace('uploaded', 'parsed'),
+        }));
+
+        await s3client.send(new DeleteObjectCommand({
+          Bucket: bucketName,
+          Key: key,
         }))
-        .on('data', async (data) => results.push(data))
-        .on('end', () => {
-          console.log('CSV Results: ', results);
-        })
-    }
 
-    return successfulResponse({
-      message: 'importFileParser fired!'
-    });
+      } catch (error) {
+        console.error('S3 Copy/Delete Error: ', error);
+      }
   } catch (e) {
-    return errorResponse(e, 404);
+    console.error(errorResponse(e, 404));
   }
 
 }

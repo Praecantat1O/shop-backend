@@ -44,18 +44,15 @@ async function getCreateProductTransact(body, productId: string) {
 
       return transact;
   } catch (e) {
-    console.error('Error: ', e);
+    console.error('getCreateProductTransact: ', e);
   }
 }
 
 export async function addProductToDB(body, productId: string) {
   try {
     const transact = await getCreateProductTransact(body, productId);
-
-    const response = await ddbDocumentClient.send(transact);
-
-    return response;
+    await ddbDocumentClient.send(transact);
   } catch (e) {
-    return `Error: ${e}`
+    console.error('addProductToDB: ', e)
   }
 }
