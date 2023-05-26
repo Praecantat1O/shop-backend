@@ -30,6 +30,14 @@ provider:
             - "ssm:GetParameter"
           Resource:
             - "*"
+        - Effect: "Allow"
+          Action:
+            - sqs:*
+          Resource:
+            Fn::GetAtt: [ProductsSQSQueue, Arn]
+        - Effect: Allow
+          Action: sns:*
+          Resource: "*"
 
 resources:
   Resources:
@@ -59,6 +67,21 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+    ProductsSQSQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ProductsSQSQueue
+    CreateProductTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        DisplayName: 'Product topic'
+        TopicName: createProductTopic
+    CreateProductTopicSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        TopicArn: {"Ref": "CreateProductTopic"}
+        Endpoint: "Stanislau_Ukolau@epam.com"
+        Protocol: "email"
 
 functions:
   getProductsList:
@@ -82,4 +105,10 @@ functions:
           path: /products
           method: post
           cors: true
-
+  catalogBatchProcess:
+    handler: src/functions/catalogBatchProcess.catalogBatchProcess
+    events:
+      - sqs:
+          batchSize: 5
+          arn:
+            Fn::GetAtt: [ProductsSQSQueue, Arn]
