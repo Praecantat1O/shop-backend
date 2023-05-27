@@ -15,6 +15,8 @@ export const importProductsFile = async (event: APIGatewayProxyEvent, context: C
     const command = new PutObjectCommand({
       Bucket: bucketName,
       Key: `uploaded/${name}`,
+      ContentType: 'text/csv',
+      ACL: "public-read-write",
     });
 
     const url = await getSignedUrl(s3client, command, {

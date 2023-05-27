@@ -1,0 +1,25 @@
+service: authorization-service
+
+frameworkVersion: '3'
+
+plugins:
+  - serverless-webpack
+  - serverless-dotenv-plugin
+
+package:
+  individually: true
+
+useDotenv: true
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: development
+  region: us-east-1
+  environment:
+    Praecantat1O: ${env:Praecantat1O}
+
+functions:
+  basicAuthorizer:
+    handler: src/functions/basicAuthorizer.basicAuthorizer
+
