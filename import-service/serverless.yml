@@ -31,6 +31,16 @@ provider:
             - "s3:*"
           Resource:
             - "arn:aws:s3:::${ssm:/system/api/IMPORT_SERVICE_BUCKET_NAME}/*"
+        - Effect: "Allow"
+          Action:
+            - "sqs:*"
+          Resource:
+            - "arn:aws:sqs:us-east-1:448342942052:ProductsSQSQueue"
+        - Effect: "Allow"
+          Action:
+            - "sns:*"
+          Resource:
+            - "*"
 
 functions:
   importProductsFile:
